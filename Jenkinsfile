@@ -25,5 +25,10 @@ pipeline{
                 echo "Deployng the WAR file to the server"
             }
         }
+        stage('Create Dockerfile'){
+            steps{
+                sh 'docker build -t dockerfiledemo .'
+            }
+        }
     }
 }
