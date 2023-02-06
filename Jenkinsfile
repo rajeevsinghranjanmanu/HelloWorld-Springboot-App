@@ -1,22 +1,29 @@
 pipeline{
     agent any
+    tools { 
+      maven 'MAVEN_HOME' 
+      jdk 'JAVA_HOME' 
+    }
     stages{
-        stage('Git clone'){
+        stage('Git Clone'){
             steps{
-                git 'https://github.com/shazforiot/HelloWorld-Springboot-App.git'
+                git branch: 'main', url: 'https://github.com/rajeevsinghranjanmanu/HelloWorld-Springboot-App.git'
             }
         }
-        
-        stage('maven build'){
+        stage('Maven Test'){
+            steps{
+                sh 'mvn test'
+            }
+        } 
+        stage('Maven Build'){
             steps{
                 sh 'mvn package'
             }
         }
-        stage('Create Dockerimage'){
+        stage('Maven Deploy'){
             steps{
-                sh 'docker build -t thetips4you/springboot:latest .'
+                echo "Deployng the WAR file to the server"
             }
         }
-        
     }
 }
