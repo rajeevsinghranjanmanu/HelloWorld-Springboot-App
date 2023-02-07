@@ -1,33 +1,36 @@
 pipeline{
     agent any
-    tools { 
-      maven 'MAVEN_HOME' 
-      jdk 'JAVA_HOME' 
+    tools {
+        maven 'MAVEN_HOME'
+        jdk 'JAVA_HOME'
+    }
+    environment{
+        DOCKERHUB_CREDENTIALS=credentials('dockerjob')
     }
     stages{
-        stage('Git Clone'){
+        stage('checkout'){
             steps{
                 git branch: 'main', url: 'https://github.com/rajeevsinghranjanmanu/HelloWorld-Springboot-App.git'
             }
         }
-        stage('Maven Test'){
-            steps{
-                sh 'mvn test'
-            }
-        } 
-        stage('Maven Build'){
+        stage('build package'){
             steps{
                 sh 'mvn package'
             }
         }
-        stage('Maven Deploy'){
+        stage('build image'){
             steps{
-                echo "Deployng the WAR file to the server"
+                sh 'docker build -t rajeevtcsranjan/demopush .'
             }
         }
-        stage('Create Dockerfile'){
+        stage('login'){
             steps{
-                sh 'docker build -t dockerfiledemo .'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('push'){
+            steps{
+                sh 'docker push rajeevtcsranjan/demopush:latest'
             }
         }
     }
